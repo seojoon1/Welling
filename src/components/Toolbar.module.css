@@ -1,0 +1,58 @@
+/* src/components/Toolbar.module.css */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.seg {
+  display: inline-flex;
+  background: #151724;
+  border: 1px solid #303244;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.segBtn {
+  color: #F5F5F5;
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.segBtn:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.segBtnActive {
+  background: #3B82F6;
+  color: #FFF;
+  box-shadow: 0 0 0 1px rgba(59,130,246,.6);
+}
+
+.btn {
+  background: #171924;
+  border: 1px solid #303244;
+  color: #F5F5F5;
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background: #202333;
+  border-color: #3B82F6;
+}
+
+.status {
+  font-size: 12px;
+  color: #A1A1AA;
+}

@@ -1,0 +1,176 @@
+/* src/App.module.css */
+.root {
+  min-height: 100vh;
+  background: #f5f5f5;
+  color: #333;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  padding: 20px;
+}
+
+.app {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.header {
+  background: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-weight: 700;
+  font-size: 24px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 20px;
+  min-height: calc(100vh - 160px);
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.middleColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mapPanel {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+}
+
+.chartPanel {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 300px;
+}
+
+.aiPanel {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  flex: 1;
+}
+
+.aiPanelYellow {
+  background: #FFF9E6;
+  border: 2px solid #FFE599;
+}
+
+.aiPanelBlue {
+  background: #E3F2FD;
+  border: 2px solid #90CAF9;
+}
+
+.aiPanelTitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #333;
+}
+
+.aiPanelContent {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.controlButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.fileButton,
+.homeButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.fileButton:hover,
+.homeButton:hover {
+  background: #f8f8f8;
+  border-color: #bbb;
+}
+
+@media (max-width: 1400px) {
+  .gridContainer {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .leftColumn {
+    grid-row: span 2;
+  }
+
+  .rightColumn {
+    grid-column: span 2;
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 900px) {
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    grid-row: auto;
+  }
+
+  .rightColumn {
+    flex-direction: column;
+  }
+
+  .mapPanel {
+    min-height: 500px;
+  }
+}

@@ -1,0 +1,27 @@
+/* src/components/ViewTabs.module.css */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  padding: 10px 24px;
+  border: none;
+  background: #e0e0e0;
+  color: #666;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: #d0d0d0;
+}
+
+.tab.active {
+  background: #7C6FD8;
+  color: white;
+}

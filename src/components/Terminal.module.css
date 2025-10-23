@@ -1,0 +1,106 @@
+/* src/components/Terminal.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #0F1118;
+  border: 1px solid #1F2937;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #1A1D29;
+  border-bottom: 1px solid #2D3748;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #10B981;
+  font-family: 'Courier New', monospace;
+}
+
+.clearBtn {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #9CA3AF;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s;
+}
+
+.clearBtn:hover {
+  background: #374151;
+  color: #F3F4F6;
+}
+
+.terminal {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #E5E7EB;
+}
+
+.terminal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal::-webkit-scrollbar-track {
+  background: #1A1D29;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.terminal::-webkit-scrollbar-thumb:hover {
+  background: #4B5563;
+}
+
+.emptyMessage {
+  color: #6B7280;
+  font-style: italic;
+}
+
+.logLine {
+  margin-bottom: 4px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timestamp {
+  color: #6B7280;
+  margin-right: 8px;
+}
+
+.prompt {
+  color: #10B981;
+  margin-right: 8px;
+  font-weight: 700;
+}
+
+.message {
+  color: #E5E7EB;
+}
