@@ -10,7 +10,8 @@ import AIConsulting from './components/AIConsulting';
 import { api } from './services/api';
 import { baselineFrom, norm, ALIAS } from './utils';
 import styles from './App.module.css';
-
+import Org_topGNB from './components/com/Org_topGNB/org_topGNB.jsx';
+import Org_leftGNB from './components/com/Org_leftGNB/org_leftGNB.jsx';
 export default function App() {
   const {
     regionData,
@@ -138,13 +139,16 @@ export default function App() {
   return (
     <div className={styles.root}>
       <div className={styles.app}>
-        <div className={styles.header}>
+        {/* <div className={styles.header}>
           <h1 className={styles.title}>
             🌏 Welling - AI 정책심리 지도
           </h1>
           <p className={styles.subtitle}>
             실제 정책과 주민체감 사이의 괴리를 AI로 시각화합니다. | 팀 인사이트
           </p>
+        </div> */}
+        <div>
+          <Org_topGNB />
         </div>
 
         <div className={styles.gridContainer}>

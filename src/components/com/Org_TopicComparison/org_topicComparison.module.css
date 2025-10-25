@@ -1,0 +1,115 @@
+.container {
+  width: 632px;
+  height: 368px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  background: var(--Neutral-Gray-900, #F8F8F8);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 130%;
+  letter-spacing: -0.02em;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.legend {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 130%;
+  letter-spacing: -0.02em;
+  color: var(--Neutral-Gray-200, #666);
+}
+
+.legendItem svg {
+  width: 2px;
+  height: 14px;
+}
+
+.chartArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.scaleLabels {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 60px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 130%;
+  letter-spacing: -0.02em;
+  color: var(--Neutral-Gray-400, #999);
+}
+
+.topics {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topicRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topicLabel {
+  width: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 130%;
+  letter-spacing: -0.02em;
+  color: #333;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barContainer {
+  width: 100%;
+  height: 16px;
+  position: relative;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+
+.barOpinion {
+  background: var(--Secondary-Red-Gradient, linear-gradient(90deg, #F96B6B 0%, #F9A2A2 100%));
+}
+
+.barPolicy {
+  background: var(--Secondary-Blue-Gradient, linear-gradient(90deg, #767FF6 0%, #A8AEF7 100%));
+}
+
+.barGap {
+  background: var(--Secondary-Purple-Gradient, linear-gradient(90deg, #8563BA 0%, #AF99D1 100%));
+}
