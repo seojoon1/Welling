@@ -4,12 +4,14 @@ import { Org_TabBar_Map } from '../Org_TabBar/org_tabBar';
 import Org_Map from '../Org_Map/org_map';
 
 function Org_MapWithTabBar() {
+  const [activeTab, setActiveTab] = useState('여론');
+
   return (
     <div className={styles.outerBox}>
+      <Org_TabBar_Map activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className={styles.innerLayout}>
-        <Org_TabBar_Map />
         <div className={styles.mapContainer}>
-          <Org_Map />
+          <Org_Map activeTab={activeTab} />
         </div>
       </div>
     </div>

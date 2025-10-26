@@ -7,9 +7,9 @@
   background: var(--Neutral-White, #FFF);
   display: flex;
   flex-direction: column;
+  gap : 30px;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  padding: 12px 47.42px 115px 46px;
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
 }
@@ -31,6 +31,46 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  /* transform: scale(0.64); */
+  transform: scale(0.85);
   transform-origin: top center;
+}
+
+/* 탭바 컨테이너 */
+.tabBarContainer {
+  display: flex;
+  width: 646px;
+  padding: 12px 0px 12px 12px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  background: var(--Neutral-Gray-900, #F8F8F8);
+}
+
+.tab {
+  display: flex;
+  padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--Neutral-Gray-400, #999);
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 130%;
+  letter-spacing: -0.28px;
+}
+
+.tab:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.activeTab {
+  background: var(--Neutral-Gray-100, #303030) !important;
+  color: var(--Neutral-White, #FFF) !important;
 }

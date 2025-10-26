@@ -2,9 +2,7 @@ import { useState } from 'react';
 import styles from './org_tabBar.module.css';
 
 // 지도 탭바 (여론, 정책, Gap)
-export function Org_TabBar_Map() {
-  const [activeTab, setActiveTab] = useState('여론');
-
+export function Org_TabBar_Map({ activeTab, setActiveTab }) {
   const tabs = ['여론', '정책', 'Gap'];
 
   return (
