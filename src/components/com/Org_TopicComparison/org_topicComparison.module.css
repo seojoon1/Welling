@@ -45,35 +45,92 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.scaleContainer {
+  position: relative;
+  padding-left: 60px;
+  padding-right: 24px;
+  margin-bottom: 0;
 }
 
 .scaleLabels {
-  display: flex;
-  justify-content: space-between;
-  padding-left: 60px;
-  margin-bottom: 8px;
+  position: relative;
+  width: 100%;
+  height: 16px;
+  margin-bottom: 3px;
   font-size: 12px;
   font-weight: 400;
   line-height: 130%;
   letter-spacing: -0.02em;
   color: var(--Neutral-Gray-400, #999);
+  z-index: 2;
+}
+
+.scaleLabels span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.scaleLabels span:first-child {
+  transform: translateX(-50%);
+}
+
+.scaleLabels span:last-child {
+  transform: translateX(-50%);
+}
+
+.gridLines {
+  position: relative;
+  width: 100%;
+  height: 218px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gridLine {
+  position: absolute;
+  width: 1px;
+  height: 218px;
+  flex-shrink: 0;
+  stroke-width: 1px;
+  transform: translateX(-0.5px);
+}
+
+.gridLineDashed {
+  position: absolute;
+  width: 1px;
+  height: 218px;
+  flex-shrink: 0;
+  stroke-width: 0.7px;
+  transform: translateX(-0.5px);
 }
 
 .topics {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 40px;
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  padding-top: 8px;
 }
 
 .topicRow {
+  position: relative;
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
 .topicLabel {
-  width: 48px;
+  position: absolute;
+  left: 0;
+  width: 43px;
   font-size: 14px;
   font-weight: 600;
   line-height: 130%;
@@ -84,32 +141,36 @@
 }
 
 .bars {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  position: absolute;
+  left: 60px;
+  right: 24px;
 }
 
 .barContainer {
   width: 100%;
-  height: 16px;
+  height: 12px;
   position: relative;
+  display: flex;
 }
 
 .bar {
   height: 100%;
-  border-radius: 100px;
+  min-width: 0;
+  border-radius: 0 4px 4px 0;
   transition: width 0.3s ease;
 }
 
 .barOpinion {
-  background: var(--Secondary-Red-Gradient, linear-gradient(90deg, #F96B6B 0%, #F9A2A2 100%));
+  background: linear-gradient(90deg, #F9A2A2 0%, #F96B6B 100%);
 }
 
 .barPolicy {
-  background: var(--Secondary-Blue-Gradient, linear-gradient(90deg, #767FF6 0%, #A8AEF7 100%));
+  background: linear-gradient(90deg, #A8AEF7 0%, #767FF6 100%);
 }
 
 .barGap {
-  background: var(--Secondary-Purple-Gradient, linear-gradient(90deg, #8563BA 0%, #AF99D1 100%));
+  background: linear-gradient(90deg, #AF99D1 0%, #8563BA 100%);
 }

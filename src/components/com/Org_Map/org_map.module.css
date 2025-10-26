@@ -1,0 +1,46 @@
+.container {
+  width: 576.584px;
+  height: 613px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mapWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.region {
+  position: absolute;
+  cursor: pointer;
+  transition: filter 0.2s;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.region svg {
+  width: 105%;
+  height: 105%;
+  display: block;
+  margin: -1.25%;
+  overflow: visible;
+}
+
+.region svg path {
+  pointer-events: auto;
+  cursor: pointer;
+  stroke-width: 1;
+}
+
+.region:hover {
+  filter: brightness(0.85) saturate(1.2);
+}
+
+.region.selected {
+  filter: brightness(0.85) saturate(1.2);
+}

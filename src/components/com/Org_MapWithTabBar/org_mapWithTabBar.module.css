@@ -1,0 +1,36 @@
+.outerBox {
+  width: 670px;
+  height: 904px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  border: 1px solid var(--Neutral-Gray-700, #EBEBEB);
+  background: var(--Neutral-White, #FFF);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.innerLayout {
+  width: 670px;
+  height: 904px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.mapContainer {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  /* transform: scale(0.64); */
+  transform-origin: top center;
+}

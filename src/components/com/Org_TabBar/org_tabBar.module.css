@@ -1,0 +1,52 @@
+/* 지도 탭바 컨테이너 */
+.containerMap {
+  display: flex;
+  width: 646px;
+  padding: 12px 0 12px 12px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  background: var(--Neutral-Gray-900, #F8F8F8);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* AI 분석 탭바 컨테이너 */
+.containerAI {
+  display: flex;
+  width: 866px;
+  padding: 12px 0 12px 12px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  background: var(--Neutral-Gray-900, #F8F8F8);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tab {
+  display: flex;
+  padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--Neutral-Gray-400, #999);
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 130%;
+  letter-spacing: -0.28px;
+}
+
+.tab:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.tab.active {
+  background: var(--Neutral-Gray-100, #303030);
+  color: var(--Neutral-White, #FFF);
+}

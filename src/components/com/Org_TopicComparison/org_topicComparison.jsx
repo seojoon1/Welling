@@ -49,18 +49,23 @@ function Org_TopicComparison() {
       </div>
 
       <div className={styles.chartArea}>
-        <div className={styles.scaleLabels}>
-          <span>0</span>
-          <span>10</span>
-          <span>20</span>
-          <span>30</span>
-          <span>40</span>
-          <span>50</span>
-          <span>60</span>
-          <span>70</span>
-          <span>80</span>
-          <span>90</span>
-          <span>100</span>
+        <div className={styles.scaleContainer}>
+          <div className={styles.scaleLabels}>
+            {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
+              <span key={value} style={{ left: `${value}%` }}>{value}</span>
+            ))}
+          </div>
+
+          <div className={styles.gridLines}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1" height="218" viewBox="0 0 1 218" fill="none" className={styles.gridLine} style={{ left: '0%' }}>
+              <path d="M0.5 0L0.50001 218" stroke="#DDDDDD"/>
+            </svg>
+            {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
+              <svg key={value} xmlns="http://www.w3.org/2000/svg" width="1" height="218" viewBox="0 0 1 218" fill="none" className={styles.gridLineDashed} style={{ left: `${value}%` }}>
+                <path d="M0.350098 0L0.35003 218" stroke="#DDDDDD" strokeWidth="0.7" strokeDasharray="6 6"/>
+              </svg>
+            ))}
+          </div>
         </div>
 
         <div className={styles.topics}>

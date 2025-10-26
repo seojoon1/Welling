@@ -19,7 +19,9 @@ function Org_ScoreComparison() {
           </svg>
           <div className={styles.scoreContent}>
             <div className={styles.label}>여론</div>
-            <div className={styles.value}>{data.opinion}/100</div>
+            <div className={styles.value}>
+              {data.opinion}<span className={styles.maxValue}>/100</span>
+            </div>
           </div>
         </div>
 
@@ -29,7 +31,9 @@ function Org_ScoreComparison() {
           </svg>
           <div className={styles.scoreContent}>
             <div className={styles.label}>정책</div>
-            <div className={styles.value}>{data.policy}/100</div>
+            <div className={styles.value}>
+              {data.policy}<span className={styles.maxValue}>/100</span>
+            </div>
           </div>
         </div>
 
