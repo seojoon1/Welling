@@ -1,12 +1,30 @@
 .container {
   width: 244px;
-  height: 1025px;
+  height: 1000px;
   flex-shrink: 0;
   border-right: 1px solid var(--Neutral-Gray-800, #E5E5E5);
   background: var(--Neutral-Gray-1000, #FAFAFA);
   overflow-y: auto;
   padding: 16px 0;
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 스크롤바 스타일 */
+.container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #DDDDDD;
+  border-radius: 2.5px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background: #CCCCCC;
 }
 
 .header {

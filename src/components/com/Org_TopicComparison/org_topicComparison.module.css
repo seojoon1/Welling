@@ -1,5 +1,7 @@
 .container {
-  width: 632px;
+  flex: 1;
+  min-width: 400px;
+  max-width: 572px;
   height: 368px;
   flex-shrink: 0;
   border-radius: 20px;

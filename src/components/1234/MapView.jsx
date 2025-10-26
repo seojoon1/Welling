@@ -1,10 +1,10 @@
 // src/components/MapView.jsx
 import React, { useEffect, useRef, useCallback } from 'react';
 import L from 'leaflet';
-import { useAppStore } from '../store/useAppStore';
-import { api } from '../services/api';
+import { useAppStore } from './store/useAppStore';
+import { api } from './services/api';
 import styles from './MapView.module.css';
-import { norm, ALIAS, gapPurple, whiteToBlue, whiteToRed } from '../utils';
+import { norm, ALIAS, gapPurple, whiteToBlue, whiteToRed } from '../../utils';
 
 const debounce = (fn, delay) => {
   let timer;

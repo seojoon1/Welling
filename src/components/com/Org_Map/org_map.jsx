@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './org_map.module.css';
 
-function Org_Map({ activeTab = '여론' }) {
+function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -102,8 +102,25 @@ function Org_Map({ activeTab = '여론' }) {
     loadSVGs();
   }, [activeTab]); // activeTab이 변경되면 다시 로드
 
+  // 외부에서 지역 이름으로 선택할 때
+  useEffect(() => {
+    if (selectedRegionName) {
+      // 지역 이름으로 코드 찾기
+      const foundCode = Object.entries(regionPositions).find(
+        ([, info]) => info.name === selectedRegionName
+      );
+      if (foundCode) {
+        setSelectedRegion(foundCode[0]);
+      }
+    }
+  }, [selectedRegionName]);
+
   const handleRegionClick = (code) => {
     setSelectedRegion(code);
+    if (onRegionSelect) {
+      const regionName = regionPositions[code]?.name;
+      onRegionSelect(regionName);
+    }
   };
 
   // 크기 순으로 정렬 (큰 지역부터 먼저 렌더링, 작은 지역이 위에 오도록)

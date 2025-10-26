@@ -1,5 +1,6 @@
 .container {
-  width: 306px;
+  min-width: 306px;
+  max-width: 306px;
   height: 368px;
   flex-shrink: 0;
   border-radius: 20px;

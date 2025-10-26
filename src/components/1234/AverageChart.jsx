@@ -1,7 +1,7 @@
 // src/components/AverageChart.jsx
 import React, { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from './store/useAppStore';
 import styles from './AverageChart.module.css';
 
 const AverageChart = () => {

@@ -1,7 +1,7 @@
 // src/components/TopThemesChart.jsx
 import React, { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from './store/useAppStore';
 import styles from './TopThemesChart.module.css';
 
 const TopThemesChart = () => {

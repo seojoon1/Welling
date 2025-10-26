@@ -1,6 +1,6 @@
 // src/components/Terminal.jsx
 import React, { useEffect, useRef } from 'react';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from './store/useAppStore';
 import styles from './Terminal.module.css';
 
 const Terminal = () => {

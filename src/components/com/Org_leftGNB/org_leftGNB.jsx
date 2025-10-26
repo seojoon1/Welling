@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './org_leftGNB.module.css';
 
-function Org_leftGNB() {
+function Org_leftGNB({ selectedRegion, onRegionSelect }) {
   const [openCategories, setOpenCategories] = useState({
     특별시: true,
     광역시: true,
@@ -9,8 +9,6 @@ function Org_leftGNB() {
     도: true,
     특별자치도: true,
   });
-
-  const [selectedRegion, setSelectedRegion] = useState('서울특별시');
 
   const regions = {
     특별시: ['서울특별시'],
@@ -27,7 +25,7 @@ function Org_leftGNB() {
       '경기도',
       '충청북도',
       '충청남도',
-      '전라북도',
+      '전라남도',
       '경상북도',
       '경상남도',
     ],
@@ -46,7 +44,9 @@ function Org_leftGNB() {
   };
 
   const handleRegionClick = (region) => {
-    setSelectedRegion(region);
+    if (onRegionSelect) {
+      onRegionSelect(region);
+    }
   };
 
   return (

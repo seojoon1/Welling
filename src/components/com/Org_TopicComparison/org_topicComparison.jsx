@@ -1,27 +1,96 @@
 import styles from './org_topicComparison.module.css';
 
-function Org_TopicComparison() {
-  // 추후 API 연결 예정
-  const topics = [
-    {
-      name: '주거\n환경',
-      opinion: 72,
-      policy: 72,
-      gap: 24
-    },
-    {
-      name: '의료\n보건',
-      opinion: 72,
-      policy: 72,
-      gap: 24
-    },
-    {
-      name: '정책\n효능감',
-      opinion: 72,
-      policy: 72,
-      gap: 24
-    }
-  ];
+function Org_TopicComparison({ selectedRegion = '서울특별시' }) {
+  // 지역별 주제 데이터
+  const regionTopicsData = {
+    '서울특별시': [
+      { name: '주거\n환경', opinion: 85, policy: 42, gap: 43 },
+      { name: '의료\n보건', opinion: 78, policy: 35, gap: 43 },
+      { name: '정책\n효능감', opinion: 65, policy: 38, gap: 27 }
+    ],
+    '부산광역시': [
+      { name: '주거\n환경', opinion: 55, policy: 50, gap: 5 },
+      { name: '의료\n보건', opinion: 52, policy: 48, gap: 4 },
+      { name: '정책\n효능감', opinion: 50, policy: 46, gap: 4 }
+    ],
+    '대구광역시': [
+      { name: '주거\n환경', opinion: 43, policy: 38, gap: 5 },
+      { name: '의료\n보건', opinion: 41, policy: 35, gap: 6 },
+      { name: '정책\n효능감', opinion: 39, policy: 33, gap: 6 }
+    ],
+    '인천광역시': [
+      { name: '주거\n환경', opinion: 50, policy: 45, gap: 5 },
+      { name: '의료\n보건', opinion: 48, policy: 42, gap: 6 },
+      { name: '정책\n효능감', opinion: 46, policy: 40, gap: 6 }
+    ],
+    '광주광역시': [
+      { name: '주거\n환경', opinion: 41, policy: 36, gap: 5 },
+      { name: '의료\n보건', opinion: 39, policy: 33, gap: 6 },
+      { name: '정책\n효능감', opinion: 37, policy: 31, gap: 6 }
+    ],
+    '대전광역시': [
+      { name: '주거\n환경', opinion: 46, policy: 42, gap: 4 },
+      { name: '의료\n보건', opinion: 44, policy: 40, gap: 4 },
+      { name: '정책\n효능감', opinion: 42, policy: 38, gap: 4 }
+    ],
+    '울산광역시': [
+      { name: '주거\n환경', opinion: 52, policy: 47, gap: 5 },
+      { name: '의료\n보건', opinion: 50, policy: 45, gap: 5 },
+      { name: '정책\n효능감', opinion: 48, policy: 43, gap: 5 }
+    ],
+    '경기도': [
+      { name: '주거\n환경', opinion: 49, policy: 45, gap: 4 },
+      { name: '의료\n보건', opinion: 47, policy: 43, gap: 4 },
+      { name: '정책\n효능감', opinion: 45, policy: 41, gap: 4 }
+    ],
+    '강원특별자치도': [
+      { name: '주거\n환경', opinion: 45, policy: 41, gap: 4 },
+      { name: '의료\n보건', opinion: 43, policy: 39, gap: 4 },
+      { name: '정책\n효능감', opinion: 41, policy: 37, gap: 4 }
+    ],
+    '충청북도': [
+      { name: '주거\n환경', opinion: 42, policy: 38, gap: 4 },
+      { name: '의료\n보건', opinion: 40, policy: 36, gap: 4 },
+      { name: '정책\n효능감', opinion: 38, policy: 34, gap: 4 }
+    ],
+    '충청남도': [
+      { name: '주거\n환경', opinion: 44, policy: 40, gap: 4 },
+      { name: '의료\n보건', opinion: 42, policy: 38, gap: 4 },
+      { name: '정책\n효능감', opinion: 40, policy: 36, gap: 4 }
+    ],
+    '전북특별자치도': [
+      { name: '주거\n환경', opinion: 40, policy: 36, gap: 4 },
+      { name: '의료\n보건', opinion: 38, policy: 34, gap: 4 },
+      { name: '정책\n효능감', opinion: 36, policy: 32, gap: 4 }
+    ],
+    '전라남도': [
+      { name: '주거\n환경', opinion: 38, policy: 34, gap: 4 },
+      { name: '의료\n보건', opinion: 36, policy: 32, gap: 4 },
+      { name: '정책\n효능감', opinion: 34, policy: 30, gap: 4 }
+    ],
+    '경상북도': [
+      { name: '주거\n환경', opinion: 34, policy: 30, gap: 4 },
+      { name: '의료\n보건', opinion: 32, policy: 28, gap: 4 },
+      { name: '정책\n효능감', opinion: 30, policy: 26, gap: 4 }
+    ],
+    '경상남도': [
+      { name: '주거\n환경', opinion: 48, policy: 43, gap: 5 },
+      { name: '의료\n보건', opinion: 46, policy: 41, gap: 5 },
+      { name: '정책\n효능감', opinion: 44, policy: 39, gap: 5 }
+    ],
+    '제주특별자치도': [
+      { name: '주거\n환경', opinion: 57, policy: 52, gap: 5 },
+      { name: '의료\n보건', opinion: 55, policy: 50, gap: 5 },
+      { name: '정책\n효능감', opinion: 53, policy: 48, gap: 5 }
+    ],
+    '세종특별자치시': [
+      { name: '주거\n환경', opinion: 51, policy: 46, gap: 5 },
+      { name: '의료\n보건', opinion: 49, policy: 44, gap: 5 },
+      { name: '정책\n효능감', opinion: 47, policy: 42, gap: 5 }
+    ]
+  };
+
+  const topics = regionTopicsData[selectedRegion] || regionTopicsData['서울특별시'];
 
   return (
     <div className={styles.container}>

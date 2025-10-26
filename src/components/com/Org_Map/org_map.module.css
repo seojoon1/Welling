@@ -18,10 +18,9 @@
 
 .region {
   position: absolute;
-  cursor: pointer;
   transition: filter 0.2s;
-  pointer-events: none;
   overflow: visible;
+  pointer-events: none;
 }
 
 .region svg {
@@ -30,6 +29,7 @@
   display: block;
   margin: -1.25%;
   overflow: visible;
+  pointer-events: none;
 }
 
 .region svg path {
@@ -43,7 +43,8 @@
 }
 
 .region.selected {
-  filter: brightness(0.85) saturate(1.2);
+  filter: brightness(0.75) saturate(1.5);
+  z-index: 999 !important;
 }
 
 /* 툴팁 */

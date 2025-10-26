@@ -1,6 +1,6 @@
 // src/components/Legend.jsx
 import React from 'react';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from './store/useAppStore';
 import styles from './Legend.module.css';
 
 const Legend = () => {

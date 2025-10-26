@@ -1,6 +1,6 @@
 // src/components/Toolbar.jsx
 import React, { useRef } from 'react';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from './store/useAppStore';
 import styles from './Toolbar.module.css';
 
 const Toolbar = ({ onFileOpen, status }) => {
