@@ -1,96 +1,89 @@
+import { useState, useEffect } from 'react';
 import styles from './org_topicComparison.module.css';
+import { getTopGaps } from '../../../services/api';
 
 function Org_TopicComparison({ selectedRegion = '서울특별시' }) {
-  // 지역별 주제 데이터
-  const regionTopicsData = {
-    '서울특별시': [
-      { name: '주거\n환경', opinion: 85, policy: 42, gap: 43 },
-      { name: '의료\n보건', opinion: 78, policy: 35, gap: 43 },
-      { name: '정책\n효능감', opinion: 65, policy: 38, gap: 27 }
-    ],
-    '부산광역시': [
-      { name: '주거\n환경', opinion: 55, policy: 50, gap: 5 },
-      { name: '의료\n보건', opinion: 52, policy: 48, gap: 4 },
-      { name: '정책\n효능감', opinion: 50, policy: 46, gap: 4 }
-    ],
-    '대구광역시': [
-      { name: '주거\n환경', opinion: 43, policy: 38, gap: 5 },
-      { name: '의료\n보건', opinion: 41, policy: 35, gap: 6 },
-      { name: '정책\n효능감', opinion: 39, policy: 33, gap: 6 }
-    ],
-    '인천광역시': [
-      { name: '주거\n환경', opinion: 50, policy: 45, gap: 5 },
-      { name: '의료\n보건', opinion: 48, policy: 42, gap: 6 },
-      { name: '정책\n효능감', opinion: 46, policy: 40, gap: 6 }
-    ],
-    '광주광역시': [
-      { name: '주거\n환경', opinion: 41, policy: 36, gap: 5 },
-      { name: '의료\n보건', opinion: 39, policy: 33, gap: 6 },
-      { name: '정책\n효능감', opinion: 37, policy: 31, gap: 6 }
-    ],
-    '대전광역시': [
-      { name: '주거\n환경', opinion: 46, policy: 42, gap: 4 },
-      { name: '의료\n보건', opinion: 44, policy: 40, gap: 4 },
-      { name: '정책\n효능감', opinion: 42, policy: 38, gap: 4 }
-    ],
-    '울산광역시': [
-      { name: '주거\n환경', opinion: 52, policy: 47, gap: 5 },
-      { name: '의료\n보건', opinion: 50, policy: 45, gap: 5 },
-      { name: '정책\n효능감', opinion: 48, policy: 43, gap: 5 }
-    ],
-    '경기도': [
-      { name: '주거\n환경', opinion: 49, policy: 45, gap: 4 },
-      { name: '의료\n보건', opinion: 47, policy: 43, gap: 4 },
-      { name: '정책\n효능감', opinion: 45, policy: 41, gap: 4 }
-    ],
-    '강원특별자치도': [
-      { name: '주거\n환경', opinion: 45, policy: 41, gap: 4 },
-      { name: '의료\n보건', opinion: 43, policy: 39, gap: 4 },
-      { name: '정책\n효능감', opinion: 41, policy: 37, gap: 4 }
-    ],
-    '충청북도': [
-      { name: '주거\n환경', opinion: 42, policy: 38, gap: 4 },
-      { name: '의료\n보건', opinion: 40, policy: 36, gap: 4 },
-      { name: '정책\n효능감', opinion: 38, policy: 34, gap: 4 }
-    ],
-    '충청남도': [
-      { name: '주거\n환경', opinion: 44, policy: 40, gap: 4 },
-      { name: '의료\n보건', opinion: 42, policy: 38, gap: 4 },
-      { name: '정책\n효능감', opinion: 40, policy: 36, gap: 4 }
-    ],
-    '전북특별자치도': [
-      { name: '주거\n환경', opinion: 40, policy: 36, gap: 4 },
-      { name: '의료\n보건', opinion: 38, policy: 34, gap: 4 },
-      { name: '정책\n효능감', opinion: 36, policy: 32, gap: 4 }
-    ],
-    '전라남도': [
-      { name: '주거\n환경', opinion: 38, policy: 34, gap: 4 },
-      { name: '의료\n보건', opinion: 36, policy: 32, gap: 4 },
-      { name: '정책\n효능감', opinion: 34, policy: 30, gap: 4 }
-    ],
-    '경상북도': [
-      { name: '주거\n환경', opinion: 34, policy: 30, gap: 4 },
-      { name: '의료\n보건', opinion: 32, policy: 28, gap: 4 },
-      { name: '정책\n효능감', opinion: 30, policy: 26, gap: 4 }
-    ],
-    '경상남도': [
-      { name: '주거\n환경', opinion: 48, policy: 43, gap: 5 },
-      { name: '의료\n보건', opinion: 46, policy: 41, gap: 5 },
-      { name: '정책\n효능감', opinion: 44, policy: 39, gap: 5 }
-    ],
-    '제주특별자치도': [
-      { name: '주거\n환경', opinion: 57, policy: 52, gap: 5 },
-      { name: '의료\n보건', opinion: 55, policy: 50, gap: 5 },
-      { name: '정책\n효능감', opinion: 53, policy: 48, gap: 5 }
-    ],
-    '세종특별자치시': [
-      { name: '주거\n환경', opinion: 51, policy: 46, gap: 5 },
-      { name: '의료\n보건', opinion: 49, policy: 44, gap: 5 },
-      { name: '정책\n효능감', opinion: 47, policy: 42, gap: 5 }
-    ]
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // 지역명 변환 (서울특별시 -> 서울)
+  const getShortRegionName = (fullName) => {
+    const mapping = {
+      '서울특별시': '서울',
+      '부산광역시': '부산',
+      '대구광역시': '대구',
+      '인천광역시': '인천',
+      '광주광역시': '광주',
+      '대전광역시': '대전',
+      '울산광역시': '울산',
+      '세종특별자치시': '세종',
+      '경기도': '경기',
+      '강원특별자치도': '강원',
+      '충청북도': '충북',
+      '충청남도': '충남',
+      '전북특별자치도': '전북',
+      '전라남도': '전남',
+      '경상북도': '경북',
+      '경상남도': '경남',
+      '제주특별자치도': '제주',
+    };
+    return mapping[fullName] || fullName;
   };
 
-  const topics = regionTopicsData[selectedRegion] || regionTopicsData['서울특별시'];
+  // 지역 선택 시 상위 Gap 주제 데이터 불러오기
+  useEffect(() => {
+    const fetchTopGaps = async () => {
+      const regionName = getShortRegionName(selectedRegion);
+      setLoading(true);
+
+      try {
+        console.log('📈 [TopGaps] Calling API:', `/api/regions/${regionName}/top-gaps/`);
+        const result = await getTopGaps(regionName);
+        console.log('📈 [TopGaps] Result:', result);
+
+        if (result.success) {
+          console.log('✅ [TopGaps] Data:', result.data);
+
+          // API 응답에서 top_gap_topics 배열 추출
+          const topicsArray = result.data.top_gap_topics || result.data;
+
+          // API 응답 데이터를 차트 형식으로 변환
+          const formattedTopics = topicsArray.map(topic => ({
+            name: topic.topic || topic.topic_name || topic.name,
+            opinion: topic.sentiment_score || topic.opinion || 0,
+            policy: topic.policy_score || topic.policy || 0,
+            gap: topic.gap || topic.gap_score || 0,
+          }));
+
+          console.log('✅ [TopGaps] Formatted:', formattedTopics);
+          setTopics(formattedTopics);
+        } else {
+          console.error('❌ [TopGaps] Failed:', result.error);
+          setTopics([]);
+        }
+      } catch (err) {
+        console.error('❌ [TopGaps] Error:', err);
+        setTopics([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopGaps();
+  }, [selectedRegion]);
+
+  if (loading || topics.length === 0) {
+    return (
+      <div className={styles.container}>
+        <h2 className={styles.title}>상위 주제 별 비교</h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <p style={{ color: '#808080', fontSize: '14px' }}>
+            {loading ? '데이터를 불러오는 중...' : '데이터가 없습니다.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

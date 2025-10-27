@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import styles from './org_map.module.css';
+import { getRegionSummary } from '../../../services/api';
 
 function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [svgContents, setSvgContents] = useState({});
+  const [regionData, setRegionData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // 각 지역의 위치와 크기 정보
   // Figma에서 확인한 X, Y, W, H 값을 여기에 입력하세요
@@ -29,26 +33,108 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     'KR50': { name: '세종특별자치시', left: 223.9202, top: 229.2156, width: 27.5816, height: 28.4583 },
   };
 
-  // 임시 데이터 (나중에 API로 대체)
-  const regionData = {
-    'KR11': { 여론: 100, 정책: 38, Gap: 7 },
-    'KR26': { 여론: 52, 정책: 48, Gap: 4 },
-    'KR27': { 여론: 41, 정책: 35, Gap: 6 },
-    'KR28': { 여론: 48, 정책: 42, Gap: 6 },
-    'KR29': { 여론: 39, 정책: 33, Gap: 6 },
-    'KR30': { 여론: 44, 정책: 40, Gap: 4 },
-    'KR31': { 여론: 50, 정책: 45, Gap: 5 },
-    'KR41': { 여론: 47, 정책: 43, Gap: 4 },
-    'KR42': { 여론: 43, 정책: 39, Gap: 4 },
-    'KR43': { 여론: 40, 정책: 36, Gap: 4 },
-    'KR44': { 여론: 42, 정책: 38, Gap: 4 },
-    'KR45': { 여론: 38, 정책: 34, Gap: 4 },
-    'KR46': { 여론: 36, 정책: 32, Gap: 4 },
-    'KR47': { 여론: 32, 정책: 28, Gap: 4 },
-    'KR48': { 여론: 46, 정책: 41, Gap: 5 },
-    'KR49': { 여론: 55, 정책: 50, Gap: 5 },
-    'KR50': { 여론: 49, 정책: 44, Gap: 5 },
+  // 지역명을 region_code로 매핑
+  const regionNameToCode = {
+    '강원': 'KR42',
+    '경기': 'KR41',
+    '경남': 'KR48',
+    '경북': 'KR47',
+    '광주': 'KR29',
+    '대구': 'KR27',
+    '대전': 'KR30',
+    '부산': 'KR26',
+    '서울': 'KR11',
+    '세종': 'KR50',
+    '울산': 'KR31',
+    '인천': 'KR28',
+    '전남': 'KR46',
+    '전북': 'KR45',
+    '제주': 'KR49',
+    '충남': 'KR44',
+    '충북': 'KR43',
   };
+
+  // API에서 지역 데이터 불러오기
+  useEffect(() => {
+    const fetchRegionData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const result = await getRegionSummary();
+
+        if (result.success) {
+          // API 응답 데이터를 regionData 형식으로 변환
+          const formattedData = {};
+
+          // API 응답이 {count, data} 형태인 경우 data 추출
+          let regions = result.data.data || result.data;
+          if (!Array.isArray(regions)) {
+            regions = Object.values(regions);
+          }
+
+          regions.forEach(region => {
+            const regionCode = regionNameToCode[region.region_name];
+            if (regionCode) {
+              formattedData[regionCode] = {
+                여론: region.sentiment_score || 0,
+                정책: region.policy_score || 0,
+                Gap: region.gap_score || 0,
+              };
+            }
+          });
+          setRegionData(formattedData);
+        } else {
+          console.error('API Error:', result.error);
+          // Fallback 데이터 사용
+          setRegionData({
+            'KR11': { 여론: 100, 정책: 38, Gap: 7 },
+            'KR26': { 여론: 52, 정책: 48, Gap: 4 },
+            'KR27': { 여론: 41, 정책: 35, Gap: 6 },
+            'KR28': { 여론: 48, 정책: 42, Gap: 6 },
+            'KR29': { 여론: 39, 정책: 33, Gap: 6 },
+            'KR30': { 여론: 44, 정책: 40, Gap: 4 },
+            'KR31': { 여론: 50, 정책: 45, Gap: 5 },
+            'KR41': { 여론: 47, 정책: 43, Gap: 4 },
+            'KR42': { 여론: 43, 정책: 39, Gap: 4 },
+            'KR43': { 여론: 40, 정책: 36, Gap: 4 },
+            'KR44': { 여론: 42, 정책: 38, Gap: 4 },
+            'KR45': { 여론: 38, 정책: 34, Gap: 4 },
+            'KR46': { 여론: 36, 정책: 32, Gap: 4 },
+            'KR47': { 여론: 32, 정책: 28, Gap: 4 },
+            'KR48': { 여론: 46, 정책: 41, Gap: 5 },
+            'KR49': { 여론: 55, 정책: 50, Gap: 5 },
+            'KR50': { 여론: 49, 정책: 44, Gap: 5 },
+          });
+        }
+      } catch (err) {
+        console.error('Fetch Error:', err.message);
+        // Fallback 데이터 사용
+        setRegionData({
+          'KR11': { 여론: 100, 정책: 38, Gap: 7 },
+          'KR26': { 여론: 52, 정책: 48, Gap: 4 },
+          'KR27': { 여론: 41, 정책: 35, Gap: 6 },
+          'KR28': { 여론: 48, 정책: 42, Gap: 6 },
+          'KR29': { 여론: 39, 정책: 33, Gap: 6 },
+          'KR30': { 여론: 44, 정책: 40, Gap: 4 },
+          'KR31': { 여론: 50, 정책: 45, Gap: 5 },
+          'KR41': { 여론: 47, 정책: 43, Gap: 4 },
+          'KR42': { 여론: 43, 정책: 39, Gap: 4 },
+          'KR43': { 여론: 40, 정책: 36, Gap: 4 },
+          'KR44': { 여론: 42, 정책: 38, Gap: 4 },
+          'KR45': { 여론: 38, 정책: 34, Gap: 4 },
+          'KR46': { 여론: 36, 정책: 32, Gap: 4 },
+          'KR47': { 여론: 32, 정책: 28, Gap: 4 },
+          'KR48': { 여론: 46, 정책: 41, Gap: 5 },
+          'KR49': { 여론: 55, 정책: 50, Gap: 5 },
+          'KR50': { 여론: 49, 정책: 44, Gap: 5 },
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRegionData();
+  }, []);
 
   // 탭 타입에 따른 점 색상
   const getDotColor = () => {
@@ -64,18 +150,40 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     }
   };
 
-  // 지수에 따른 지역 색상 (0~100 범위를 0~1 투명도로 변환)
+  // hex to HSL 변환 함수
+  const hexToHSL = (hex) => {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+
+    return [h * 360, s * 100, l * 100];
+  };
+
+  // 지수에 따른 지역 색상 (0~100 범위를 채도로 변환)
   const getRegionColor = (code) => {
     const score = regionData[code]?.[activeTab] || 0;
-    const opacity = Math.min(Math.max(score / 100, 0.1), 1); // 최소 0.1, 최대 1
+    const saturation = Math.min(Math.max(score, 10), 100); // 최소 10%, 최대 100%
     const baseColor = getDotColor();
 
-    // hex to rgba 변환
-    const r = parseInt(baseColor.slice(1, 3), 16);
-    const g = parseInt(baseColor.slice(3, 5), 16);
-    const b = parseInt(baseColor.slice(5, 7), 16);
+    const [h, , l] = hexToHSL(baseColor);
 
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    return `hsl(${h}, ${saturation}%, ${l}%)`;
   };
 
   // SVG 파일들을 로드하고 색상 적용
@@ -130,9 +238,28 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     return areaB - areaA; // 큰 것부터
   });
 
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.mapWrapper}>Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.mapWrapper}>Error: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
-      <div className={styles.mapWrapper}>
+      <div
+        className={styles.mapWrapper}
+        onMouseLeave={() => setHoveredRegion(null)}
+      >
         {sortedRegions.map(([code, info], index) => (
           <div
             key={code}

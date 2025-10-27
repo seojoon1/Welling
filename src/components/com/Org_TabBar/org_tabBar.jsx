@@ -21,9 +21,7 @@ export function Org_TabBar_Map({ activeTab, setActiveTab }) {
 }
 
 // AI 분석 탭바 (AI 인사이트, AI 컨설팅)
-export function Org_TabBar_AI() {
-  const [activeTab, setActiveTab] = useState('AI 인사이트');
-
+export function Org_TabBar_AI({ activeTab, setActiveTab }) {
   const tabs = ['AI 인사이트', 'AI 컨설팅'];
 
   return (

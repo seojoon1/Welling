@@ -69,6 +69,15 @@
   border-left: 3px solid var(--Primary-Purple-600, #8564BB);
 }
 
+/* AI 컨설팅 탭 섹션 (청록색) */
+.sectionConsulting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 16px;
+  border-left: 2px solid #11947A;
+}
+
 .sectionTitle {
   color: var(--Neutral-Gray-100, #303030);
   font-family: Pretendard;
@@ -133,4 +142,16 @@
   line-height: 160%;
   letter-spacing: -0.24px;
   margin: 0;
+}
+
+/* 로딩 상태 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--Neutral-Gray-300, #808080);
+  font-family: Pretendard;
+  font-size: 14px;
+  font-weight: 400;
 }
