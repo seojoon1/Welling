@@ -1,36 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './org_map.module.css';
 import { getRegionSummary } from '../../../services/api';
+import FeatureMap from './FeatureMap.jsx';
 
 function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const [svgContents, setSvgContents] = useState({});
   const [regionData, setRegionData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [svgLoaded, setSvgLoaded] = useState(false);
 
-  // 각 지역의 위치와 크기 정보
-  // Figma에서 확인한 X, Y, W, H 값을 여기에 입력하세요
-  const regionPositions = {
-    'KR11': { name: '서울특별시', left: 199.2756, top: 109.3824, width: 37.6856, height: 30.4024 },
-    'KR26': { name: '부산광역시', left: 403.9907, top: 397.6476, width: 22.7936, height: 22.7936 },
-    'KR27': { name: '대구광역시', left: 359.0314, top: 310.633, width:27.2329 , height: 27.2329 },
-    'KR28': { name: '인천광역시', left: 159.2182, top: 124.5557, width: 40.2597, height:21.5798 },
-    'KR29': { name: '광주광역시', left: 200.973, top: 398.5359, width: 17.7243, height: 12.734},
-    'KR30': { name: '대전광역시', left: 239.1866, top: 253.2231, width: 24.0749, height: 30.0537 },
-    'KR31': { name: '울산광역시', left: 408.8999, top: 350.5209, width: 43.8339, height: 41.2038},
-    'KR41': { name: '경기도', left: -6, top: 48.8242, width: 294.1591, height: 153.014 },
-    'KR42': { name: '강원특별자치도', left: 217.8, top: -2, width: 229.285, height: 232.3196 },
-    'KR43': { name: '충청북도', left: 240, top: 167, width: 131.5016, height: 141.5497 },
-    'KR44': { name: '충청남도', left: 136.8, top: 186.6072, width: 135.2897, height: 121.2628},
-    'KR45': { name: '전북특별자치도', left: 147.6422, top: 296.6736, width: 152.4745, height:96.4345 },
-    'KR46': { name: '전라남도', left: 37.4967, top: 377.2702, width: 249.4485, height: 162.0505 },
-    'KR47': { name: '경상북도', left: 296.9477, top: 100.23, width: 286.3364, height: 286.3364},
-    'KR48': { name: '경상남도', left: 278.1304, top: 327.4575, width: 151.4629, height: 142.8985},
-    'KR49': { name: '제주특별자치도', left: 141.4823, top: 572.9426, width: 72.4271, height: 40.0574 },
-    'KR50': { name: '세종특별자치시', left: 223.9202, top: 229.2156, width: 27.5816, height: 28.4583 },
+  /**
+   * SVG ref 콜백 함수
+   * - SVG가 DOM에 마운트되면 자동으로 호출됨
+   * - path 요소가 존재하면 svgLoaded를 true로 설정
+   * - path가 없으면 100ms 후 재시도 (비동기 렌더링 대응)
+   */
+  const svgRef = useCallback((node) => {
+    // console.log('SVG ref callback called with:', node);
+    if (node) {
+      const paths = node.querySelectorAll('path[id]');
+      // console.log('Found paths in ref callback:', paths.length);
+      if (paths.length > 0) {
+        // console.log('Setting svgLoaded to true in callback');
+        setSvgLoaded(true);
+      } else {
+        setTimeout(() => {
+          const retryPaths = node.querySelectorAll('path[id]');
+          // console.log('Retry in callback, found paths:', retryPaths.length);
+          if (retryPaths.length > 0) {
+            setSvgLoaded(true);
+          }
+        }, 100);
+      }
+    }
+  }, []);
+
+  // 지역 코드별 이름 매핑
+  const regionNames = {
+    'KR11': '서울특별시',
+    'KR26': '부산광역시',
+    'KR27': '대구광역시',
+    'KR28': '인천광역시',
+    'KR29': '광주광역시',
+    'KR30': '대전광역시',
+    'KR31': '울산광역시',
+    'KR41': '경기도',
+    'KR42': '강원특별자치도',
+    'KR43': '충청북도',
+    'KR44': '충청남도',
+    'KR45': '전북특별자치도',
+    'KR46': '전라남도',
+    'KR47': '경상북도',
+    'KR48': '경상남도',
+    'KR49': '제주특별자치도',
+    'KR50': '세종특별자치시',
   };
 
   // 지역명을 region_code로 매핑
@@ -54,7 +80,11 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     '충북': 'KR43',
   };
 
-  // API에서 지역 데이터 불러오기
+  /**
+   * API에서 지역별 데이터(여론/정책/Gap 점수) 불러오기
+   * - 초기 마운트 시 한 번만 실행
+   * - API 실패 시 fallback 데이터 사용
+   */
   useEffect(() => {
     const fetchRegionData = async () => {
       try {
@@ -63,15 +93,15 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
         const result = await getRegionSummary();
 
         if (result.success) {
-          // API 응답 데이터를 regionData 형식으로 변환
           const formattedData = {};
 
-          // API 응답이 {count, data} 형태인 경우 data 추출
+          // API 응답 데이터 정규화 (배열 형태로 변환)
           let regions = result.data.data || result.data;
           if (!Array.isArray(regions)) {
             regions = Object.values(regions);
           }
 
+          // 지역명을 코드로 변환하고 점수 매핑
           regions.forEach(region => {
             const regionCode = regionNameToCode[region.region_name];
             if (regionCode) {
@@ -136,8 +166,13 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     fetchRegionData();
   }, []);
 
-  // 탭 타입에 따른 점 색상
-  const getDotColor = () => {
+  /**
+   * 활성 탭에 따른 기본 색상 반환
+   * - 여론: 빨강 (#F96C6C)
+   * - 정책: 파랑 (#7781F6)
+   * - Gap: 보라 (#8564BB)
+   */
+  const getDotColor = useCallback(() => {
     switch(activeTab) {
       case '여론':
         return '#F96C6C';
@@ -148,96 +183,164 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
       default:
         return '#F96C6C';
     }
-  };
+  }, [activeTab]);
 
-  // hex to HSL 변환 함수
-  const hexToHSL = (hex) => {
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
+  /**
+   * Hex 색상을 RGB 배열로 변환
+   * @param {string} hex - '#RRGGBB' 형식의 색상 코드
+   * @returns {number[]} [R, G, B] 배열 (0-255 범위)
+   */
+  const hexToRGB = useCallback((hex) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return [r, g, b];
+  }, []);
 
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-        case g: h = ((b - r) / d + 2) / 6; break;
-        case b: h = ((r - g) / d + 4) / 6; break;
-      }
-    }
-
-    return [h * 360, s * 100, l * 100];
-  };
-
-  // 지수에 따른 지역 색상 (0~100 범위를 채도로 변환)
-  const getRegionColor = (code) => {
+  /**
+   * 지역 코드와 점수에 따른 색상 계산
+   * - 점수가 높을수록 진하게 (opacity 높음)
+   * - 점수가 낮을수록 연하게 (opacity 낮음)
+   * - 최소 투명도 20%로 제한하여 가시성 확보
+   * @param {string} code - 지역 코드 (예: 'KR11')
+   * @returns {string} rgba 색상 문자열
+   */
+  const getRegionColor = useCallback((code) => {
     const score = regionData[code]?.[activeTab] || 0;
-    const saturation = Math.min(Math.max(score, 10), 100); // 최소 10%, 최대 100%
     const baseColor = getDotColor();
 
-    const [h, , l] = hexToHSL(baseColor);
+    // 점수를 0~100 범위에서 0.2~1로 정규화
+    const opacity = Math.min(Math.max(score / 100, 0.2), 1);
 
-    return `hsl(${h}, ${saturation}%, ${l}%)`;
-  };
+    const [r, g, b] = hexToRGB(baseColor);
 
-  // SVG 파일들을 로드하고 색상 적용
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }, [activeTab, regionData, getDotColor, hexToRGB]);
+
+
+  /**
+   * SVG path 요소들에 색상 적용
+   * - activeTab 변경 시 지역별 색상 재계산 및 적용
+   * - 선택된 지역에 selected 클래스 추가
+   *
+   * 실행 조건:
+   * 1. 데이터 로딩 완료
+   * 2. 지역 데이터 존재
+   * 3. SVG 로드 완료
+   */
   useEffect(() => {
-    if(loading || Object.keys(regionData).length === 0) return;
-    const loadSVGs = async () => {
-      const contents = {};
-      for (const code of Object.keys(regionPositions)) {
-        try {
-          const response = await fetch(`/maps/${code}.svg`);
-          let text = await response.text();
+    // console.log('Color effect triggered:', { loading, hasData: Object.keys(regionData).length, svgLoaded });
 
-          // SVG의 fill 색상을 지수에 따라 변경
-          const color = getRegionColor(code);
-          text = text.replace(/fill="[^"]*"/g, `fill="${color}"`);
+    if (loading) {
+      // console.log('Still loading...');
+      return;
+    }
 
-          contents[code] = text;
-        } catch (error) {
-          console.error(`Failed to load ${code}.svg:`, error);
+    if (Object.keys(regionData).length === 0) {
+      // console.log('No region data yet');
+      return;
+    }
+
+    if (!svgLoaded) {
+      // console.log('SVG not loaded yet');
+      return;
+    }
+
+    // console.log('Applying colors for activeTab:', activeTab);
+    // console.log('Region data:', regionData);
+
+    const svg = document.querySelector(`.${styles.svgContainer}`);
+    if (!svg) {
+      // console.log('SVG not found in DOM');
+      return;
+    }
+
+    const paths = svg.querySelectorAll('path[id]');
+    // console.log('Found paths:', paths.length);
+
+    // 각 지역 path에 색상 및 스타일 적용
+    paths.forEach((pathElement) => {
+      const code = pathElement.id;
+      if (regionNames[code]) {
+        const color = getRegionColor(code);
+        // const score = regionData[code]?.[activeTab] || 0;
+        // console.log(`Region ${code}: score=${score}, color=${color}`);
+
+        // fill 속성과 style 모두 설정 (브라우저 호환성)
+        pathElement.setAttribute('fill', color);
+        pathElement.style.fill = color;
+        pathElement.style.cursor = 'pointer';
+
+        // 선택된 지역 강조
+        if (selectedRegion === code) {
+          pathElement.classList.add(styles.selected);
+        } else {
+          pathElement.classList.remove(styles.selected);
         }
       }
-      setSvgContents(contents);
-    };
+    });
+  }, [activeTab, regionData, loading, svgLoaded, selectedRegion, getRegionColor, regionNames, styles.svgContainer, styles.selected]); 
 
-    loadSVGs();
-  }, [activeTab, regionData, loading]); 
-
-  // 외부에서 지역 이름으로 선택할 때
+  /**
+   * 외부 컴포넌트에서 전달된 지역 이름으로 지역 선택
+   * - selectedRegionName prop이 변경되면 해당 지역 선택
+   */
   useEffect(() => {
     if (selectedRegionName) {
-      // 지역 이름으로 코드 찾기
-      const foundCode = Object.entries(regionPositions).find(
-        ([, info]) => info.name === selectedRegionName
+      const foundCode = Object.entries(regionNames).find(
+        ([, name]) => name === selectedRegionName
       );
       if (foundCode) {
         setSelectedRegion(foundCode[0]);
       }
     }
-  }, [selectedRegionName]);
+  }, [selectedRegionName, regionNames]);
 
-  const handleRegionClick = (code) => {
-    setSelectedRegion(code);
-    if (onRegionSelect) {
-      const regionName = regionPositions[code]?.name;
-      onRegionSelect(regionName);
+  /**
+   * 지역 클릭 이벤트 핸들러
+   * - 지역 선택 상태 업데이트
+   * - 부모 컴포넌트에 선택 이벤트 전달
+   */
+  const handleRegionClick = (e) => {
+    const target = e.target;
+    const code = target.id;
+
+    if (code && regionNames[code]) {
+      setSelectedRegion(code);
+      if (onRegionSelect) {
+        const regionName = regionNames[code];
+        onRegionSelect(regionName);
+      }
     }
   };
 
-  // 크기 순으로 정렬 (큰 지역부터 먼저 렌더링, 작은 지역이 위에 오도록)
-  const sortedRegions = Object.entries(regionPositions).sort(([, a], [, b]) => {
-    const areaA = a.width * a.height;
-    const areaB = b.width * b.height;
-    return areaB - areaA; // 큰 것부터
-  });
+  /**
+   * 지역 마우스 오버 이벤트 핸들러
+   * - 툴팁 표시를 위한 hoveredRegion 상태 업데이트
+   */
+  const handleRegionMouseEnter = (e) => {
+    const target = e.target;
+    const code = target.id;
+
+    // console.log('Mouse enter:', code, regionNames[code]);
+
+    if (code && regionNames[code]) {
+      setHoveredRegion(code);
+    }
+  };
+
+  /**
+   * 마우스 이동 이벤트 핸들러
+   * - 툴팁 위치 계산 및 업데이트
+   */
+  const handleRegionMouseMove = (e) => {
+    const mapWrapper = e.currentTarget;
+    const rect = mapWrapper.getBoundingClientRect();
+    setTooltipPosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
 
   if (loading) {
     return (
@@ -259,50 +362,26 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     <div className={styles.container}>
       <div
         className={styles.mapWrapper}
+        onMouseMove={handleRegionMouseMove}
         onMouseLeave={() => setHoveredRegion(null)}
       >
-        {sortedRegions.map(([code, info], index) => (
-          <div
-            key={code}
-            className={`${styles.region} ${selectedRegion === code ? styles.selected : ''}`}
-            style={{
-              left: `${info.left}px`,
-              top: `${info.top}px`,
-              width: `${info.width}px`,
-              height: `${info.height}px`,
-              zIndex: index + 1,
-            }}
-            onClick={() => handleRegionClick(code)}
-            onMouseEnter={(e) => {
-              setHoveredRegion(code);
-              e.currentTarget.style.zIndex = '1000';
-            }}
-            onMouseLeave={(e) => {
-              setHoveredRegion(null);
-              e.currentTarget.style.zIndex = String(index + 1);
-            }}
-            onMouseMove={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              setTooltipPosition({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
-              });
-            }}
-            dangerouslySetInnerHTML={{ __html: svgContents[code] || '' }}
-          />
-        ))}
-
+        <FeatureMap
+          ref={svgRef}
+          className={styles.svgContainer}
+          onClick={handleRegionClick}
+          onMouseOver={handleRegionMouseEnter}
+        />
         {/* 툴팁 */}
-        {hoveredRegion && regionPositions[hoveredRegion] && (
+        {hoveredRegion && regionNames[hoveredRegion] && (
           <div
             className={styles.tooltip}
             style={{
-              left: `${regionPositions[hoveredRegion].left + tooltipPosition.x + 10}px`,
-              top: `${regionPositions[hoveredRegion].top + tooltipPosition.y - 60}px`,
+              left: `${tooltipPosition.x + 10}px`,
+              top: `${tooltipPosition.y - 60}px`,
             }}
           >
             <div className={styles.tooltipRegion}>
-              {regionPositions[hoveredRegion].name}
+              {regionNames[hoveredRegion]}
             </div>
             <div className={styles.tooltipScore}>
               <svg className={styles.tooltipDot} xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">
