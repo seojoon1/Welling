@@ -110,7 +110,7 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
 
                 {/* 상위 주제 */}
                 {diagnosisData.result?.top_topics && (
-                  <div className={styles.section}>
+                  <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>상위 주제</h3>
                     <p className={styles.text}>{diagnosisData.result.top_topics}</p>
                   </div>
@@ -118,7 +118,7 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
 
                 {/* 여론 활발도 */}
                 {diagnosisData.scarcity_level && (
-                  <div className={styles.section}>
+                  <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>여론 활발도</h3>
                     <p className={styles.text}>{diagnosisData.scarcity_level}</p>
                   </div>
@@ -126,7 +126,7 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
 
                 {/* 문제 요약 */}
                 {diagnosisData.result?.problem_summary && (
-                  <div className={styles.section}>
+                  <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>문제 요약</h3>
                     <p className={styles.text}>{diagnosisData.result.problem_summary}</p>
                   </div>
@@ -134,7 +134,7 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
 
                 {/* 희소성 인사이트 */}
                 {diagnosisData.result?.scarcity_insight && (
-                  <div className={styles.section}>
+                  <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>여론 분석</h3>
                     <p className={styles.text}>{diagnosisData.result.scarcity_insight}</p>
                   </div>

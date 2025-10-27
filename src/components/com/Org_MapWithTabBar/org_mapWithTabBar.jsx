@@ -12,7 +12,7 @@ function Org_MapWithTabBar({ onRegionSelect, selectedRegionName }) {
       <div className={styles.innerLayout}>
         <div className={styles.mapContainer}>
           <Org_Map
-            activeTab={activeTab}
+            activeTab={activeTab ? activeTab : "여론"}
             onRegionSelect={onRegionSelect}
             selectedRegionName={selectedRegionName}
           />

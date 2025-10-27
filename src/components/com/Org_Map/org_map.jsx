@@ -188,6 +188,7 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
 
   // SVG 파일들을 로드하고 색상 적용
   useEffect(() => {
+    if(loading || Object.keys(regionData).length === 0) return;
     const loadSVGs = async () => {
       const contents = {};
       for (const code of Object.keys(regionPositions)) {
@@ -208,7 +209,7 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     };
 
     loadSVGs();
-  }, [activeTab]); // activeTab이 변경되면 다시 로드
+  }, [activeTab, regionData, loading]); 
 
   // 외부에서 지역 이름으로 선택할 때
   useEffect(() => {
