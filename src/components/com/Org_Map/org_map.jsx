@@ -171,73 +171,77 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
   }, []);
 
   /**
-   * 활성 탭에 따른 기본 색상 반환
-   * - 여론: 빨강 (#F96C6C)
-   * - 정책: 파랑 (#7781F6)
-   * - Gap: 보라 (#8564BB)
+   * 활성 탭에 따른 6단계 색상 팔레트 반환
+   * - 여론: 연한 빨강 → 진한 빨강 (6단계)
+   * - 정책: 연한 파랑 → 진한 파랑 (6단계)
+   * - Gap: 연한 보라 → 진한 보라 (6단계)
    */
-  const getDotColor = useCallback(() => {
+  const getColorPalette = useCallback(() => {
     switch(activeTab) {
       case '여론':
-        return '#F96C6C';
+        return ['#FBE1E1', '#FDD7D7', '#FCB3B3', '#FA8282', '#F16868', '#CB5858'];
       case '정책':
-        return '#7781F6';
+        return ['#E3E8FC', '#DCDEFD', '#BDC2FB', '#969FF8', '#818AF7', '#6A73DB'];
       case 'Gap':
-        return '#8564BB';
+        return ['#F2EBFC', '#E4DDEF', '#CDC0E3', '#B29CD4', '#A288CA', '#8D6EBF'];
       default:
-        return '#F96C6C';
+        return ['#FBE1E1', '#FDD7D7', '#FCB3B3', '#FA8282', '#F16868', '#CB5858'];
     }
   }, [activeTab]);
 
   /**
-   * Hex 색상을 HSL 배열로 변환
-   * @param {string} hex - '#RRGGBB' 형식의 색상 코드
-   * @returns {number[]} [H, S, L] 배열 (H: 0-360, S: 0-100, L: 0-100)
+   * 툴팁 도트 색상 반환 (각 팔레트의 가장 진한 색상)
    */
-  const hexToHSL = useCallback((hex) => {
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-      h = s = 0; // 무채색
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-        case g: h = ((b - r) / d + 2) / 6; break;
-        case b: h = ((r - g) / d + 4) / 6; break;
-        default: h = 0;
-      }
-    }
-
-    return [h * 360, s * 100, l * 100];
-  }, []);
+  const getDotColor = useCallback(() => {
+    const palette = getColorPalette();
+    return palette[5]; // 가장 진한 색상
+  }, [getColorPalette]);
 
   /**
-   * 지역 코드와 점수에 따른 색상 계산
-   * - 점수가 높을수록 채도가 높아져 진하게 표현 (saturation 높음)
-   * - 점수가 낮을수록 채도가 낮아져 연하게 표현 (saturation 낮음)
-   * - HSL 색상 모델을 사용하여 직관적인 색상 조절
+   * 현재 활성 탭의 최솟값과 최댓값 계산
+   * - 실제 데이터 범위를 파악하여 상대적 색상 매핑에 사용
+   */
+  const getMinMaxScores = useCallback(() => {
+    const scores = Object.values(regionData)
+      .map(data => data[activeTab])
+      .filter(score => score !== undefined && score !== null);
+
+    if (scores.length === 0) {
+      return { min: 0, max: 100 };
+    }
+
+    return {
+      min: Math.min(...scores),
+      max: Math.max(...scores),
+    };
+  }, [regionData, activeTab]);
+
+  /**
    * @param {string} code - 지역 코드 (예: 'KR11')
-   * @returns {string} hsl 색상 문자열
+   * @returns {string} hex 색상 문자열
    */
   const getRegionColor = useCallback((code) => {
     const score = regionData[code]?.[activeTab] || 0;
-    const baseColor = getDotColor();
+    const palette = getColorPalette();
 
-    const [h, , l] = hexToHSL(baseColor);
+    // 현재 탭의 최솟값과 최댓값 가져오기
+    const { min, max } = getMinMaxScores();
 
-    // 점수를 0~100 범위의 채도로 변환 (최소 10% 채도로 가시성 확보)
-    const saturation = Math.min(Math.max(score, 10), 100);
+    // min과 max가 같으면 (모든 값이 동일) 중간 색상 사용
+    if (min === max) {
+      return palette[2]; // 중간 색상
+    }
 
-    return `hsl(${h}, ${saturation}%, ${l}%)`;
-  }, [activeTab, regionData, getDotColor, hexToHSL]);
+    // 상대값 정규화: (score - min) / (max - min) × 100
+    // 결과: 0 ~ 100 범위로 매핑
+    const normalizedScore = ((score - min) / (max - min)) * 100;
+
+    // 6개 구간으로 나누어 색상 선택
+    // 0-16.67 → 0, 16.67-33.33 → 1, ..., 83.33-100 → 5
+    const colorIndex = Math.min(Math.floor(normalizedScore / 16.67), 5);
+
+    return palette[colorIndex];
+  }, [activeTab, regionData, getColorPalette, getMinMaxScores]);
 
 
   /**
