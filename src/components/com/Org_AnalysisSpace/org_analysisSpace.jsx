@@ -109,20 +109,20 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                 </div>
 
                 {/* 상위 주제 */}
-                {diagnosisData.result?.top_topics && (
+                {/* {diagnosisData.result?.top_topics && (
                   <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>상위 주제</h3>
                     <p className={styles.text}>{diagnosisData.result.top_topics}</p>
                   </div>
-                )}
+                )} */}
 
                 {/* 여론 활발도 */}
-                {diagnosisData.scarcity_level && (
+                {/* {diagnosisData.scarcity_level && (
                   <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>여론 활발도</h3>
                     <p className={styles.text}>{diagnosisData.scarcity_level}</p>
                   </div>
-                )}
+                )} */}
 
                 {/* 문제 요약 */}
                 {diagnosisData.result?.problem_summary && (
@@ -133,21 +133,21 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                 )}
 
                 {/* 희소성 인사이트 */}
-                {diagnosisData.result?.scarcity_insight && (
+                {/* {diagnosisData.result?.scarcity_insight && (
                   <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>여론 분석</h3>
                     <p className={styles.text}>{diagnosisData.result.scarcity_insight}</p>
                   </div>
-                )}
+                )} */}
 
                 {/* 데이터 출처 */}
-                {diagnosisData.record_count && (
+                {/* {diagnosisData.record_count && (
                   <div className={styles.infoBox}>
                     <p className={styles.infoFooter}>
                       분석 데이터: {diagnosisData.record_count}개 의견 기반
                     </p>
                   </div>
-                )}
+                )} */}
               </>
             ) : (
               <div className={styles.section}>
@@ -190,28 +190,17 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                     <h3 className={styles.sectionTitle}>참고 정책</h3>
                     <div className={styles.infoBox}>
                       <ul style={{ margin: 0, paddingLeft: '20px' }}>
-                        {ragData.result.reference_policies.map((policy, index) => (
-                          <li key={index} className={styles.text} style={{ marginBottom: '8px' }}>
-                            {policy}
-                          </li>
-                        ))}
+                        {ragData.result.reference_policies.map((policyName, index) => {
+                          const regionName = ragData.result.reference_regions?.[index] || '';
+                          // console.log(`[Policy ${index}] Name: "${policyName}", Region: "${regionName}"`);
+                          // console.log('Full ragData.result:', ragData.result);
+                          return (
+                            <li key={index} className={styles.text} style={{ marginBottom: '8px' }}>
+                              {policyName} ({regionName})
+                            </li>
+                          );
+                        })}
                       </ul>
-                    </div>
-                  </div>
-                )}
-
-                {/* 유사 지역 */}
-                {ragData.related_regions && ragData.related_regions.length > 0 && (
-                  <div className={styles.sectionConsulting}>
-                    <h3 className={styles.sectionTitle}>유사 지역</h3>
-                    <div className={styles.infoBox}>
-                      {ragData.related_regions.map((region, index) => (
-                        <div key={index} style={{ marginBottom: '4px' }}>
-                          <span className={styles.text}>
-                            {region.region_name} (유사도: {(region.similarity * 100).toFixed(1)}%)
-                          </span>
-                        </div>
-                      ))}
                     </div>
                   </div>
                 )}

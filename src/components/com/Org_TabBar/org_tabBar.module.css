@@ -13,7 +13,7 @@
 /* AI 분석 탭바 컨테이너 */
 .containerAI {
   display: flex;
-  width: 866px;
+  width: 789px;
   padding: 12px 0 12px 12px;
   align-items: center;
   gap: 4px;

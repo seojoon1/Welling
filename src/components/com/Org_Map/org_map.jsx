@@ -11,6 +11,10 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [svgLoaded, setSvgLoaded] = useState(false);
+  const [zoom, setZoom] = useState(1); // 확대/축소 배율 (1 = 100%)
+  const [pan, setPan] = useState({ x: 0, y: 0 }); // 지도 이동 위치
+  const [isDragging, setIsDragging] = useState(false); // 드래그 상태
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 }); // 드래그 시작 위치
 
   /**
    * SVG ref 콜백 함수
@@ -186,36 +190,54 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
   }, [activeTab]);
 
   /**
-   * Hex 색상을 RGB 배열로 변환
+   * Hex 색상을 HSL 배열로 변환
    * @param {string} hex - '#RRGGBB' 형식의 색상 코드
-   * @returns {number[]} [R, G, B] 배열 (0-255 범위)
+   * @returns {number[]} [H, S, L] 배열 (H: 0-360, S: 0-100, L: 0-100)
    */
-  const hexToRGB = useCallback((hex) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return [r, g, b];
+  const hexToHSL = useCallback((hex) => {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0; // 무채색
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+        default: h = 0;
+      }
+    }
+
+    return [h * 360, s * 100, l * 100];
   }, []);
 
   /**
    * 지역 코드와 점수에 따른 색상 계산
-   * - 점수가 높을수록 진하게 (opacity 높음)
-   * - 점수가 낮을수록 연하게 (opacity 낮음)
-   * - 최소 투명도 20%로 제한하여 가시성 확보
+   * - 점수가 높을수록 채도가 높아져 진하게 표현 (saturation 높음)
+   * - 점수가 낮을수록 채도가 낮아져 연하게 표현 (saturation 낮음)
+   * - HSL 색상 모델을 사용하여 직관적인 색상 조절
    * @param {string} code - 지역 코드 (예: 'KR11')
-   * @returns {string} rgba 색상 문자열
+   * @returns {string} hsl 색상 문자열
    */
   const getRegionColor = useCallback((code) => {
     const score = regionData[code]?.[activeTab] || 0;
     const baseColor = getDotColor();
 
-    // 점수를 0~100 범위에서 0.2~1로 정규화
-    const opacity = Math.min(Math.max(score / 100, 0.2), 1);
+    const [h, , l] = hexToHSL(baseColor);
 
-    const [r, g, b] = hexToRGB(baseColor);
+    // 점수를 0~100 범위의 채도로 변환 (최소 10% 채도로 가시성 확보)
+    const saturation = Math.min(Math.max(score, 10), 100);
 
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-  }, [activeTab, regionData, getDotColor, hexToRGB]);
+    return `hsl(${h}, ${saturation}%, ${l}%)`;
+  }, [activeTab, regionData, getDotColor, hexToHSL]);
 
 
   /**
@@ -342,6 +364,86 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
     });
   };
 
+  /**
+   * 마우스 휠 이벤트 핸들러
+   * - 마우스 휠로 지도 확대/축소
+   */
+  const handleWheel = useCallback((e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1; // 휠 방향에 따라 확대/축소
+    setZoom((prevZoom) => {
+      const newZoom = prevZoom + delta;
+      return Math.min(Math.max(newZoom, 0.5), 3); // 50% ~ 300% 제한
+    });
+  }, []);
+
+  /**
+   * 확대 버튼 핸들러
+   */
+  const handleZoomIn = () => {
+    setZoom((prevZoom) => Math.min(prevZoom + 0.2, 3));
+  };
+
+  /**
+   * 축소 버튼 핸들러
+   */
+  const handleZoomOut = () => {
+    setZoom((prevZoom) => Math.max(prevZoom - 0.2, 0.5));
+  };
+
+  /**
+   * 리셋 버튼 핸들러
+   */
+  const handleZoomReset = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 }); // 위치도 초기화
+  };
+
+  /**
+   * 마우스 다운 이벤트 - 드래그 시작
+   */
+  const handleMouseDown = (e) => {
+    // SVG path 클릭이 아닌 경우만 드래그 시작
+    if (e.target.tagName !== 'path') {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - pan.x,
+        y: e.clientY - pan.y,
+      });
+    }
+  };
+
+  /**
+   * 마우스 무브 이벤트 - 드래그 중
+   */
+  const handleMouseMoveForDrag = useCallback((e) => {
+    if (isDragging) {
+      setPan({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+    }
+  }, [isDragging, dragStart]);
+
+  /**
+   * 마우스 업 이벤트 - 드래그 종료
+   */
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // 전역 마우스 이벤트 리스너 등록
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMoveForDrag);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMoveForDrag);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMoveForDrag]);
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -360,17 +462,43 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
 
   return (
     <div className={styles.container}>
+      {/* 확대/축소 컨트롤 버튼 */}
+      <div className={styles.zoomControls}>
+        <button className={styles.zoomButton} onClick={handleZoomIn} title="확대">
+          +
+        </button>
+        <button className={styles.zoomButton} onClick={handleZoomReset} title="리셋">
+          ⟲
+        </button>
+        <button className={styles.zoomButton} onClick={handleZoomOut} title="축소">
+          −
+        </button>
+      </div>
+
       <div
         className={styles.mapWrapper}
         onMouseMove={handleRegionMouseMove}
         onMouseLeave={() => setHoveredRegion(null)}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
-        <FeatureMap
-          ref={svgRef}
-          className={styles.svgContainer}
-          onClick={handleRegionClick}
-          onMouseOver={handleRegionMouseEnter}
-        />
+        <div
+          className={styles.mapContainer}
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transformOrigin: 'center center',
+            transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+          }}
+        >
+          <FeatureMap
+            ref={svgRef}
+            className={styles.svgContainer}
+            onClick={handleRegionClick}
+            onMouseOver={handleRegionMouseEnter}
+          />
+        </div>
+
         {/* 툴팁 */}
         {hoveredRegion && regionNames[hoveredRegion] && (
           <div

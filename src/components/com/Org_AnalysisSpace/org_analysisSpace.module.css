@@ -1,12 +1,12 @@
 /* 레이아웃 박스 */
 .layoutBox {
-  width: 824px;
+  width: 800px;
   max-width: 894px;
   height: 420px;
   flex-shrink: 0;
   border-radius: 20px;
   border: 1px solid var(--Neutral-Gray-700, #EBEBEB);
-  background: var(--Neutral-White, #FFF);
+  background: var(--Neutral-White, #fff);
   display: flex;
   flex-direction: column;
   padding: 24px;
