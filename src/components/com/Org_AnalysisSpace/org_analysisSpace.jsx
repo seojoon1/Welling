@@ -191,12 +191,12 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                     <div className={styles.infoBox}>
                       <ul style={{ margin: 0, paddingLeft: '20px' }}>
                         {ragData.result.reference_policies.map((policyName, index) => {
-                          const regionName = ragData.result.reference_regions?.[index] || '';
+                          // const regionName = ragData.result.reference_regions?.[index] || '';
                           // console.log(`[Policy ${index}] Name: "${policyName}", Region: "${regionName}"`);
                           // console.log('Full ragData.result:', ragData.result);
                           return (
                             <li key={index} className={styles.text} style={{ marginBottom: '8px' }}>
-                              {policyName} ({regionName})
+                              {policyName} {/*({regionName})*/}
                             </li>
                           );
                         })}
