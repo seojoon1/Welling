@@ -1,9 +1,10 @@
 .gnbContainer {
     display: flex;
-    width: 1920px;
-    height: 54px;
+    width: auto;
+    height: 27px;
     padding: 16px;
     align-items: center;
+    justify-content: space-between;
     flex-shrink: 0;
     border-bottom: 1px solid var(--Neutral-Gray-600, #DDD);
     background: var(--Neutral-White, #FFF);
@@ -16,4 +17,13 @@
     background-image: url('/Logo/allLogo.svg');
     background-size: contain;
     background-repeat: no-repeat;
+}
+
+.teamName {
+    color: var(--Neutral-Gray-100, #303030);
+    font-family: Pretendard;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 130%;
+    letter-spacing: -2%;
 }

@@ -4,6 +4,7 @@ function Org_topGNB() {
   return (
     <div className={styles.gnbContainer}>
         <div className={styles.logoContainer}></div>
+        <div className={styles.teamName}>INSIGHT</div>
     </div>
   );
 }

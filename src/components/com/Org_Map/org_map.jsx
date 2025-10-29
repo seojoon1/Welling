@@ -479,6 +479,11 @@ function Org_Map({ activeTab = '여론', onRegionSelect, selectedRegionName }) {
         </button>
       </div>
 
+      {/* 데이터 수집기간 */}
+      <div className={styles.dataPeriod}>
+        데이터 수집기간 2025.10.05~2025.10.23
+      </div>
+
       <div
         className={styles.mapWrapper}
         onMouseMove={handleRegionMouseMove}
