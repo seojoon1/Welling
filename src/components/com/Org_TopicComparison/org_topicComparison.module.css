@@ -120,6 +120,9 @@
   right: 0;
   z-index: 1;
   padding-top: 8px;
+  text-align: center;
+  justify-content: center;
+  word-break: keep-all;
 }
 
 .topicRow {

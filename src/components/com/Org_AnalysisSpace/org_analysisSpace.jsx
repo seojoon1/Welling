@@ -128,10 +128,11 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                 {diagnosisData.result?.problem_summary && (
                   <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>문제 요약</h3>
-                    <p className={styles.text}>{diagnosisData.result.problem_summary}</p>
-                    <div className={styles.dataMaketime}>
-                      {`데이터 생성 시간: ${diagnosisData.diagnosed_at || 'N/A'}`}
-                    </div>
+                    <p className={styles.text}>{diagnosisData.result.problem_summary}
+                    </p>
+                  <div className={styles.dataMaketime}>
+                    {`데이터 생성 시간: ${diagnosisData.diagnosed_at || 'N/A'}`}
+                  </div>  
                   </div>
                 )}
 
