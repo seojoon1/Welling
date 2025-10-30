@@ -129,6 +129,9 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                   <div className={styles.sectionConsulting}>
                     <h3 className={styles.sectionTitle}>문제 요약</h3>
                     <p className={styles.text}>{diagnosisData.result.problem_summary}</p>
+                    <div className={styles.dataMaketime}>
+                      {`데이터 생성 시간: ${diagnosisData.diagnosed_at || 'N/A'}`}
+                    </div>
                   </div>
                 )}
 
@@ -191,6 +194,7 @@ function Org_AnalysisSpace({ selectedRegion = '서울특별시' }) {
                     <div className={styles.infoBox}>
                       <ul style={{ margin: 0, paddingLeft: '20px' }}>
                         {ragData.result.reference_policies.map((policyName, index) => {
+
                           // const regionName = ragData.result.reference_regions?.[index] || '';
                           // console.log(`[Policy ${index}] Name: "${policyName}", Region: "${regionName}"`);
                           // console.log('Full ragData.result:', ragData.result);
